@@ -1,54 +1,72 @@
 const streetsList =  document.querySelector('.main-list');
 
-function loadData(path, success, error) {
-    const xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function()
-    {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200) {
-                if (success)
-                    success(xhr.responseText);
-            } else {
-                if (error)
-                    error(xhr);
-            }
+axios.get('./data.json')
+    .then((response) => {
+        const json = response.data;
+        if (json.streets.length <= 1) {
+            return;
         }
+        for (let i = 0; i < json.streets.length; i++) {
+            const li = document.createElement('li');
+            li.innerHTML = json.streets[i];
+            streetsList.appendChild(li);
+        }
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+
+document.querySelector(".main-button").addEventListener("click", () => {
+    var q = async.priorityQueue((task, cb) => {
+        if (task.unshift) {
+            console.log('Highest priority request fired!');
+        } else {
+            console.log('Normal request fired!');
+        }
+        axios.get(task.url)
+            .then((response) => {
+                console.log('Response arrived');
+                cb();
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }, 5);
+
+    q.drain = () => {
+        console.log('All the work has been done');
     };
-    xhr.open("GET", path, true);
-    xhr.send();
-};
 
-loadData('./data.json',
-        function(data) {
-            json = JSON.parse(data);
-            if (json.streets.length <= 1) {
-                return;
-            }
-            for (let i = 0; i < json.streets.length; i++) {
-                const li = document.createElement('li');
-                li.innerHTML = json.streets[i];
-                streetsList.appendChild(li);
-            }
-        },
-        function(xhr) { 
-            console.error(xhr); 
-        }
-);
+    const names = [];
+    for (let i = 2; i < 101; i++) {
+        q.push({RequestNumber: i, unshift: false, url: `https://jsonplaceholder.typicode.com/posts/${i}`}, i);
+    }  
 
-const dataArr = [];
-document.querySelector(".main-button").addEventListener("click", function() {
-    for (let i = 0; i < 25; i++) {
-        for(let i = 0; i < 5; i++) {
-            loadData('https://swapi.co/api/people/',
-                function(data) {
-                    dataArr.push(data.results)
-                },
-                function(xhr) {
-                    console.error(xhr);
-                }
-            )
-        }
-        console.log(dataArr);
-    }   
-}
-);
+    q.push({RequestNumber: 1, unshift: true, url: `https://jsonplaceholder.typicode.com/posts/${1}`}, 1);
+});
+
+// const loadData = () => {
+//     const xhr = new XMLHttpRequest();
+//     xhr.onreadystatechange = () => {
+//         if (xhr.readyState === XMLHttpRequest.DONE) {
+//             if (xhr.status === 200) {
+//                     json = JSON.parse(xhr.responseText);
+//                     if (json.streets.length <= 1) {
+//                         return;
+//                     }
+//                     for (let i = 0; i < json.streets.length; i++) {
+//                         const li = document.createElement('li');
+//                         li.innerHTML = json.streets[i];
+//                         streetsList.appendChild(li);
+//                     }
+//             } else {
+//                 console.log(error);
+//             }
+//         }
+//     };
+//     xhr.open("GET", './data.json', true);
+//     xhr.send();
+// };
+
+// loadData();
+
