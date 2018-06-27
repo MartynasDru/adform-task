@@ -6,18 +6,6 @@ const fs = require('fs');
 const serveStatic = require('serve-static');
 const finalhandler = require('finalhandler');
 
-// const streets = [];
-// let json;
-// request({url: 'https://raw.githubusercontent.com/zemirco/sf-city-lots-json/master/citylots.json'})
-// .pipe(JSONStream.parse('features.*.properties.STREET'))
-// .pipe(es.mapSync((data) => {
-//     if (streets.indexOf(data) !== -1) {
-//         return;
-//     }    
-//     streets.push(data);
-//     console.log(data);
-// }));
- 
 const dataObj = {
     streets: [],
 };
@@ -34,6 +22,7 @@ request({url: 'https://raw.githubusercontent.com/zemirco/sf-city-lots-json/maste
     if (dataObj.streets.indexOf(data) !== -1) {
         return;
     }
+    console.log(data);
     dataObj.streets.push(data);
 }));
 
