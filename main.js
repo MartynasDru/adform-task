@@ -17,7 +17,7 @@ axios.get('./data.json')
     });
 
 document.querySelector(".main-button").addEventListener("click", () => {
-    var q = async.priorityQueue((task, cb) => {
+    var q = async.queue((task, cb) => {
         if (task.unshift) {
             console.log('Highest priority request fired!');
         } else {
@@ -39,10 +39,10 @@ document.querySelector(".main-button").addEventListener("click", () => {
 
     const names = [];
     for (let i = 2; i < 101; i++) {
-        q.push({RequestNumber: i, unshift: false, url: `https://jsonplaceholder.typicode.com/posts/${i}`}, i);
+        q.push({RequestNumber: i, unshift: false, url: `https://jsonplaceholder.typicode.com/posts/${i}`});
     }  
 
-    q.push({RequestNumber: 1, unshift: true, url: `https://jsonplaceholder.typicode.com/posts/${1}`}, 1);
+    q.unshift({RequestNumber: 1, unshift: true, url: `https://jsonplaceholder.typicode.com/posts/${1}`});
 });
 
 // const loadData = () => {
